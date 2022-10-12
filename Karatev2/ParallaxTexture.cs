@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,10 +24,18 @@ namespace Karatev2
         public void Draw(SpriteBatch spriteBatch)
         {
             int width = spriteBatch.GraphicsDevice.Adapter.CurrentDisplayMode.Width;
+            int textureStartX = (int)(OffsetX % _texture.Width);
+            int textureWidth = _texture.Width - textureStartX;
+            int startX = 0;
 
-            //int startX = OffsetX % _texture.Width;
+            while(startX < width)
+            {
+                spriteBatch.Draw(_texture, new Vector2(startX, _positionY), new Rectangle(textureStartX, 0, textureWidth, _texture.Height), Color.White);
+                startX += textureWidth;
 
-            int textureWidth = _texture.Width;
+                textureStartX = 0;
+                textureWidth = _texture.Width;
+            }
 
 
         }

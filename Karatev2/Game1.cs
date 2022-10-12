@@ -21,6 +21,9 @@ namespace Karatev2
         private Texture2D layer1Texture;
         private Texture2D layer2Texture;
         private Texture2D layer3Texture;
+        private ParallaxTexture layer1;
+        private ParallaxTexture layer2;
+        private ParallaxTexture layer3;
 
         private SpriteFont font;
 
@@ -30,11 +33,13 @@ namespace Karatev2
         private bool isCrouching;
         private bool hit;
         private bool isPlaying;
+        private double score = 0;
 
         private List<Vector2> fireballs;
         private int fireballTimer = 120;
         private Random rnd;
-        private double score = 0;
+
+        private const int STARTY = 400;
 
 
         public Game1()
@@ -46,7 +51,7 @@ namespace Karatev2
 
         protected override void Initialize()
         {
-            position = new Vector2(300, 200);
+            position = new Vector2(300, STARTY);
             fireballs = new List<Vector2>();
             rnd = new Random();
 
@@ -67,6 +72,10 @@ namespace Karatev2
             layer1Texture = Content.Load<Texture2D>("layer1");
             layer2Texture = Content.Load<Texture2D>("layer2");
             layer3Texture = Content.Load<Texture2D>("layer3");
+
+            layer1 = new ParallaxTexture(layer1Texture, 370);
+            layer2 = new ParallaxTexture(layer2Texture, 300);
+            layer3 = new ParallaxTexture(layer3Texture, 200);
         }
 
         protected override void Update(GameTime gameTime)
@@ -87,22 +96,22 @@ namespace Karatev2
                 return;
             }
 
+            layer1.OffsetX += 1.5f;
+            layer2.OffsetX += 1.0f;
+            layer3.OffsetX += 0.5f;
+
             score += gameTime.ElapsedGameTime.TotalSeconds;
 
             position += velocity;
 
-            if (position.Y > 200)
+            if (position.Y > STARTY)
             {
-                position = new Vector2(position.X, 200);
+                position = new Vector2(position.X, STARTY);
                 velocity = Vector2.Zero;
                 isJumping = false;
             }
 
             velocity += new Vector2(0, 0.2f);
-
-
-
-
 
             if (state.IsKeyDown(Keys.W) && !isJumping)
             {
@@ -120,7 +129,6 @@ namespace Karatev2
                 isCrouching = false;
             }
 
-            //Fireballs!!!!!
             fireballTimer--;
 
             if (fireballTimer == 0)
@@ -129,13 +137,12 @@ namespace Karatev2
 
                 if (rnd.Next(2) == 0)
                 {
-                    fireballs.Add(new Vector2(800, 200));
+                    fireballs.Add(new Vector2(800, STARTY));
                 }
                 else
                 {
-                    fireballs.Add(new Vector2(800, 240));
+                    fireballs.Add(new Vector2(800, STARTY + 40));
                 }
-
             }
 
             for (int i = 0; i < fireballs.Count; i++)
@@ -157,7 +164,6 @@ namespace Karatev2
                 currentTexture = normalTexture;
             }
 
-
             Rectangle playerBox = new Rectangle((int)position.X, (int)position.Y,
                 currentTexture.Width, currentTexture.Height);
 
@@ -166,7 +172,6 @@ namespace Karatev2
                 Rectangle fireballBox = new Rectangle((int)fireball.X, (int)fireball.Y,
                     fireballTexture.Width, fireballTexture.Height);
 
-                //Överlappar vi?
                 var kollision = Intersection(playerBox, fireballBox);
 
                 if (kollision.Width > 0 && kollision.Height > 0)
@@ -182,9 +187,6 @@ namespace Karatev2
                 }
             }
 
-
-
-
             base.Update(gameTime);
         }
 
@@ -195,18 +197,25 @@ namespace Karatev2
             _spriteBatch.Begin();
             _spriteBatch.Draw(backgroundTexture, Vector2.Zero, Color.White);
 
+            layer3.Draw(_spriteBatch);
+            layer2.Draw(_spriteBatch);
+            layer1.Draw(_spriteBatch);
+
             if (isPlaying)
             {
                 _spriteBatch.DrawString(font, ((int)score).ToString(),
                 new Vector2(10, 20), Color.White);
 
+                if (hit)
+                {
+                    _spriteBatch.DrawString(font, "HIT!", new Vector2(10, 40), Color.White);
+                }
                 _spriteBatch.Draw(currentTexture, position, Color.White);
 
                 foreach (var fireball in fireballs)
                 {
                     _spriteBatch.Draw(fireballTexture, fireball, Color.White);
                 }
-
             }
             else
             {
