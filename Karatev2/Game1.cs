@@ -35,7 +35,7 @@ namespace Karatev2
         private bool isPlaying;
         private double score = 0;
 
-        private List<Vector2> fireballs;
+        private List<Fireball> fireballs; // Innehåller fireballs
         private int fireballTimer = 120;
         private Random rnd;
 
@@ -52,7 +52,7 @@ namespace Karatev2
         protected override void Initialize()
         {
             position = new Vector2(300, STARTY);
-            fireballs = new List<Vector2>();
+            fireballs = new List<Fireball>(); //Uppdatera till Fireball
             rnd = new Random();
 
             base.Initialize();
@@ -137,17 +137,23 @@ namespace Karatev2
 
                 if (rnd.Next(2) == 0)
                 {
-                    fireballs.Add(new Vector2(800, STARTY));
+                    Vector2 startpos = new Vector2(800, STARTY);
+                    int velo = rnd.Next(-16, -3);
+                    Vector2 fireballVelocity = new Vector2(velo, 0);
+                    fireballs.Add(new Fireball(startpos, fireballVelocity)); // SKapa objekt
                 }
                 else
                 {
-                    fireballs.Add(new Vector2(800, STARTY + 40));
+                    Vector2 startpos = new Vector2(800, STARTY + 40);
+                    int velo = rnd.Next(-16, -3);
+                    Vector2 fireballVelocity = new Vector2(velo, 0);
+                    fireballs.Add(new Fireball(startpos, fireballVelocity)); // SKapa objekt
                 }
             }
 
             for (int i = 0; i < fireballs.Count; i++)
             {
-                fireballs[i] = fireballs[i] + new Vector2(-2, 0);
+                fireballs[i].Update(); //Här skall vi köra update()
             }
 
             if (isJumping)
@@ -169,8 +175,7 @@ namespace Karatev2
 
             foreach (var fireball in fireballs)
             {
-                Rectangle fireballBox = new Rectangle((int)fireball.X, (int)fireball.Y,
-                    fireballTexture.Width, fireballTexture.Height);
+                Rectangle fireballBox = fireball.Hitbox(fireballTexture); //Uppdaterad
 
                 var kollision = Intersection(playerBox, fireballBox);
 
@@ -214,7 +219,7 @@ namespace Karatev2
 
                 foreach (var fireball in fireballs)
                 {
-                    _spriteBatch.Draw(fireballTexture, fireball, Color.White);
+                    fireball.Draw(_spriteBatch, fireballTexture); //Uppdaterad
                 }
             }
             else
