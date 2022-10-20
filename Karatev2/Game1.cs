@@ -9,6 +9,7 @@ namespace Karatev2
 {
     public class Game1 : Game
     {
+        /* Deklarerar alla variabler för spelet */
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Texture2D normalTexture;
@@ -26,10 +27,8 @@ namespace Karatev2
 
         private SpriteFont font;
 
-        private Vector2 position;
-        private Vector2 velocity;
-        private bool isJumping;
-        private bool isCrouching;
+        private Player player;
+
         private bool hit;
         private bool isPlaying;
         private double score = 0;
@@ -50,8 +49,9 @@ namespace Karatev2
 
         protected override void Initialize()
         {
-            position = new Vector2(300, STARTY);
+            /* Skapar värden för variabler */
             fireballs = new List<Fireball>();
+            
             rnd = new Random();
 
             base.Initialize();
@@ -59,6 +59,7 @@ namespace Karatev2
 
         protected override void LoadContent()
         {
+            /* Laddar allt innehåll */
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             normalTexture = Content.Load<Texture2D>("normal");
@@ -75,13 +76,21 @@ namespace Karatev2
             layer1 = new ParallaxTexture(layer1Texture, 370);
             layer2 = new ParallaxTexture(layer2Texture, 300);
             layer3 = new ParallaxTexture(layer3Texture, 200);
+
+            // Jämför med konstruktorn. Denna anropas här, när vi initierar objektet av klassen Player
+            player = new Player(currentTexture, new Vector2(300, STARTY), Vector2.Zero);
         }
 
         protected override void Update(GameTime gameTime)
         {
+            /* Den logiska biten i spelet!
+             * Här skall vi inte rita ut något på skärmen!
+             * Vi skall bara behandla spellogiken
+             */
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            // Tangenbordshantering
             var state = Keyboard.GetState();
 
             if (state.IsKeyDown(Keys.Enter) && !isPlaying)
@@ -90,44 +99,42 @@ namespace Karatev2
                 isPlaying = true;
             }
 
+            // Om vi inte spelar, skall Update() inte köras vidare! 
             if (!isPlaying)
             {
                 return;
             }
 
+            // Uppdaterar bakgrunden
             layer1.OffsetX += 1.5f;
             layer2.OffsetX += 1.0f;
             layer3.OffsetX += 0.5f;
 
+            //Uppdaterar tiden
             score += gameTime.ElapsedGameTime.TotalSeconds;
 
-            position += velocity;
+            //Uppdaterar spelaren!
+            player.Update(STARTY);
 
-            if (position.Y > STARTY)
+
+            // Fortsätter med tangentbordshantering
+            if (state.IsKeyDown(Keys.W) && !player.isJumping)
             {
-                position = new Vector2(position.X, STARTY);
-                velocity = Vector2.Zero;
-                isJumping = false;
+                player.Velocity = new Vector2(0, -5.0f);
+
+                player.isJumping = true;
             }
 
-            velocity += new Vector2(0, 0.2f);
-
-            if (state.IsKeyDown(Keys.W) && !isJumping)
+            if (state.IsKeyDown(Keys.S) && !player.isJumping)
             {
-                velocity = new Vector2(0, -5.0f);
-
-                isJumping = true;
-            }
-
-            if (state.IsKeyDown(Keys.S) && !isJumping)
-            {
-                isCrouching = true;
+                player.isCrouching = true;
             }
             else
             {
-                isCrouching = false;
+                player.isCrouching = false;
             }
 
+            // Fireballshantering
             fireballTimer--;
 
             if (fireballTimer == 0)
@@ -155,22 +162,23 @@ namespace Karatev2
                 fireballs[i].Update();
             }
 
-            if (isJumping)
+            // Uppdaterar rätt texture utifrån spelarens status
+            if (player.isJumping)
             {
-                currentTexture = jumpingTexture;
+                player.Texture = jumpingTexture;
             }
 
-            else if (isCrouching)
+            else if (player.isCrouching)
             {
-                currentTexture = crouchTexture;
+                player.Texture = crouchTexture;
             }
             else
             {
-                currentTexture = normalTexture;
+                player.Texture = normalTexture;
             }
 
-            Rectangle playerBox = new Rectangle((int)position.X, (int)position.Y,
-                currentTexture.Width, currentTexture.Height);
+            //Kollisionshantering! Senare i kursen!
+            Rectangle playerBox = player.Hitbox();
 
             foreach (var fireball in fireballs)
             {
@@ -182,7 +190,7 @@ namespace Karatev2
                 {
                     Rectangle r1 = Normalize(playerBox, kollision);
                     Rectangle r2 = Normalize(fireballBox, kollision);
-                    hit = TestCollision(currentTexture, r1, fireballTexture, r2);
+                    hit = TestCollision(player.Texture, r1, fireballTexture, r2);
 
                     if (hit)
                     {
@@ -199,30 +207,33 @@ namespace Karatev2
             //GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin();
+
+            //Ritar ut bakgrund!
             _spriteBatch.Draw(backgroundTexture, Vector2.Zero, Color.White);
 
             layer3.Draw(_spriteBatch);
             layer2.Draw(_spriteBatch);
             layer1.Draw(_spriteBatch);
 
+
             if (isPlaying)
             {
+                // Skriver ut poäng i hörnet!
                 _spriteBatch.DrawString(font, ((int)score).ToString(),
                 new Vector2(10, 20), Color.White);
 
-                if (hit)
-                {
-                    _spriteBatch.DrawString(font, "HIT!", new Vector2(10, 40), Color.White);
-                }
-                _spriteBatch.Draw(currentTexture, position, Color.White);
+                // Ritar ut objektet på rätt ställe!
+                player.Draw(_spriteBatch);
 
+                // Ritar ut alla fireballs
                 foreach (var fireball in fireballs)
                 {
-                    fireball.Draw(_spriteBatch); //Texture in fireball
+                    fireball.Draw(_spriteBatch);
                 }
             }
             else
             {
+                // Om vi inte spelar just nu, skall denna text skrivas ut!
                 _spriteBatch.DrawString(font, "Press ENTER to start!",
                     new Vector2(350, 200), Color.White);
             }

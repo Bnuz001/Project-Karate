@@ -10,6 +10,9 @@ namespace Karatev2
 {
     class ParallaxTexture
     {
+        /* Klassbeskrivning av miljön. Skapar en parallax scrollning!
+         * Vi djukdyker i denna senare i kursen!
+         */
         private Texture2D _texture;
         private int _positionY;
 

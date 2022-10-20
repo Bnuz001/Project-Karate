@@ -29,11 +29,6 @@ namespace Karatev2
             Position += Velocity;
         }
 
-        public Vector2 GetPosition()
-        {
-            return Position;
-        }
-
         public void Draw(SpriteBatch _spriteBatch)  //Texture in fireball
         {
             _spriteBatch.Draw(Texture, Position, Color.White);
