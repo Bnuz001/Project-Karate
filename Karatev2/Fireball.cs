@@ -13,11 +13,13 @@ namespace Karatev2
     {
         private Vector2 Position;
         private Vector2 Velocity;
+        private Texture2D Texture;  //Texture in fireball
 
-        public Fireball(Vector2 position, Vector2 velocity)
+        public Fireball(Vector2 position, Vector2 velocity, Texture2D texture)  //Texture in fireball
         {
             Position = position;
             Velocity = velocity;
+            Texture = texture;
         }
 
         public void Update()
@@ -30,15 +32,15 @@ namespace Karatev2
             return Position;
         }
 
-        public void Draw(SpriteBatch _spriteBatch, Texture2D texture)
+        public void Draw(SpriteBatch _spriteBatch)  //Texture in fireball
         {
-            _spriteBatch.Draw(texture, Position, Color.White);
+            _spriteBatch.Draw(Texture, Position, Color.White);
         }
 
-        public Rectangle Hitbox(Texture2D texture)
+        public Rectangle Hitbox()  //Texture in fireball
         {
             return new Rectangle((int)Position.X, (int)Position.Y, 
-                texture.Width, texture.Height);
+                Texture.Width, Texture.Height);
         }
     }
 }
