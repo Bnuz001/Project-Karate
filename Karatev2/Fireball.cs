@@ -17,6 +17,7 @@ namespace Karatev2
 
         public Fireball(Vector2 position, Vector2 velocity, Texture2D texture)  //Texture in fireball
         {
+            // Konstruktorn för klassen fireball
             Position = position;
             Velocity = velocity;
             Texture = texture;
@@ -24,6 +25,7 @@ namespace Karatev2
 
         public void Update()
         {
+            // Logiska uppdateringen
             Position += Velocity;
         }
 
