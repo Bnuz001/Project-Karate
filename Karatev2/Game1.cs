@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 
-namespace Karatev2
+namespace Karate
 {
     public class Game1 : Game
     {

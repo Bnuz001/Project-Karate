@@ -1,3 +1,3 @@
 ﻿
-using var game = new Karatev2.Game1();
+using var game = new Karate.Game1();
 game.Run();
