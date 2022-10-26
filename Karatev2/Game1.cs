@@ -10,8 +10,10 @@ namespace Karatev2
     public class Game1 : Game
     {
         /* Deklarerar alla variabler för spelet */
-        private GraphicsDeviceManager _graphics;
-        private SpriteBatch _spriteBatch;
+
+        private GraphicsDeviceManager _graphics; // Kopplingen mellan grafikkortet och spelet
+        private SpriteBatch _spriteBatch; // Objekt för att hantera bilder
+
         private Texture2D normalTexture;
         private Texture2D jumpingTexture;
         private Texture2D crouchTexture;
@@ -49,7 +51,9 @@ namespace Karatev2
 
         protected override void Initialize()
         {
-            /* Skapar värden för variabler */
+            /* Initierar av olika objekt. Märk att vi inte ladda data här (bilder, ljud) utan
+             * detta sker i LoadContent
+             */
             fireballs = new List<Fireball>();
             
             rnd = new Random();
@@ -59,7 +63,7 @@ namespace Karatev2
 
         protected override void LoadContent()
         {
-            /* Laddar allt innehåll */
+            /* Laddar datan till spelet */
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             normalTexture = Content.Load<Texture2D>("normal");
@@ -77,15 +81,15 @@ namespace Karatev2
             layer2 = new ParallaxTexture(layer2Texture, 300);
             layer3 = new ParallaxTexture(layer3Texture, 200);
 
-            // Jämför med konstruktorn. Denna anropas här, när vi initierar objektet av klassen Player
+            // Jämför med konstruktorn för klassen Player.
+            // Denna anropas här, när vi initierar objektet av klassen Player
             player = new Player(currentTexture, new Vector2(300, STARTY), Vector2.Zero);
         }
 
         protected override void Update(GameTime gameTime)
         {
-            /* Den logiska biten i spelet!
-             * Här skall vi inte rita ut något på skärmen!
-             * Vi skall bara behandla spellogiken
+            /* Update() är en del av spel-loopen. Den körs före Draw() 
+             * innehåller den logiska biten i spelet, tex knapptryck.
              */
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -110,10 +114,10 @@ namespace Karatev2
             layer2.OffsetX += 1.0f;
             layer3.OffsetX += 0.5f;
 
-            //Uppdaterar tiden
+            // Uppdaterar tiden
             score += gameTime.ElapsedGameTime.TotalSeconds;
 
-            //Uppdaterar spelaren!
+            // Uppdaterar spelaren!
             player.Update(STARTY);
 
 
@@ -177,12 +181,12 @@ namespace Karatev2
                 player.Texture = normalTexture;
             }
 
-            //Kollisionshantering! Senare i kursen!
+            //Kollisionshantering! Vi djupdyker i detta senare i kursen!
             Rectangle playerBox = player.Hitbox();
 
             foreach (var fireball in fireballs)
             {
-                Rectangle fireballBox = fireball.Hitbox();  //Texture in fireball
+                Rectangle fireballBox = fireball.Hitbox();
 
                 var kollision = Intersection(playerBox, fireballBox);
 
@@ -204,7 +208,9 @@ namespace Karatev2
 
         protected override void Draw(GameTime gameTime)
         {
-            //GraphicsDevice.Clear(Color.CornflowerBlue);
+            /* I Draw(), som körs efter Update() skall endast ritningen av olika objekt ske på skärmen.
+             * Positioneringen av objekten räknas ut i Update() MEN själva ritandet sker i Draw().
+             */
 
             _spriteBatch.Begin();
 
@@ -214,7 +220,6 @@ namespace Karatev2
             layer3.Draw(_spriteBatch);
             layer2.Draw(_spriteBatch);
             layer1.Draw(_spriteBatch);
-
 
             if (isPlaying)
             {
@@ -245,6 +250,7 @@ namespace Karatev2
 
         private void Reset()
         {
+            // Återställer data när vi börjar spela
             fireballs.Clear();
             fireballTimer = 120;
             score = 0;
@@ -252,6 +258,7 @@ namespace Karatev2
 
         public static Rectangle Intersection(Rectangle r1, Rectangle r2)
         {
+            //Kollisionshantering
             int x1 = Math.Max(r1.Left, r2.Left);
             int y1 = Math.Max(r1.Top, r2.Top);
             int x2 = Math.Min(r1.Right, r2.Right);
@@ -266,6 +273,7 @@ namespace Karatev2
 
         public static Rectangle Normalize(Rectangle reference, Rectangle overlap)
         {
+            //Kollisionshantering
             //Räkna ut en rektangel som kan användas relativt till referensrektangeln
             return new Rectangle(
               overlap.X - reference.X,
@@ -276,6 +284,7 @@ namespace Karatev2
 
         public static bool TestCollision(Texture2D t1, Rectangle r1, Texture2D t2, Rectangle r2)
         {
+            //Kollisionshantering
             //Beräkna hur många pixlar som finns i området som ska undersökas
             int pixelCount = r1.Width * r1.Height;
             uint[] texture1Pixels = new uint[pixelCount];
