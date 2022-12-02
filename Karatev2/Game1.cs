@@ -71,7 +71,7 @@ namespace Karate
             crouchTexture = Content.Load<Texture2D>("crouch");
             fireballTexture = Content.Load<Texture2D>("fireball");
             font = Content.Load<SpriteFont>("font");
-
+            //Hej
             backgroundTexture = Content.Load<Texture2D>("background");
             layer1Texture = Content.Load<Texture2D>("layer1");
             layer2Texture = Content.Load<Texture2D>("layer2");
