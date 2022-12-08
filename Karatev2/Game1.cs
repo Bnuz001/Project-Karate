@@ -39,7 +39,7 @@ namespace Karate
         private int fireballTimer = 120;
         private Random rnd;
 
-        private const int STARTY = 400;
+        private const int STARTY = 200;
 
 
         public Game1()
@@ -83,7 +83,7 @@ namespace Karate
 
             // Jämför med konstruktorn för klassen Player.
             // Denna anropas här, när vi initierar objektet av klassen Player
-            player = new Player(currentTexture, new Vector2(300, STARTY), Vector2.Zero);
+            player = new Player(normalTexture, new Vector2(300, STARTY), Vector2.Zero);
         }
 
         protected override void Update(GameTime gameTime)

@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Karate
 {
+    /// <summary>
+    /// Class Player for Karategame
+    /// </summary>
     class Player
     {
         /* Deklara alla variabler i klassen */
@@ -16,7 +19,12 @@ namespace Karate
         public Vector2 Velocity;
         public bool isJumping;
         public bool isCrouching;
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="texture"></param>
+        /// <param name="position"></param>
+        /// <param name="velocity"></param>
         public Player(Texture2D texture, Vector2 position, Vector2 velocity)
         {
             /* Konstruktorn av klassen 
@@ -28,7 +36,10 @@ namespace Karate
             isJumping = false;
             isCrouching = false;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="StartY"></param>
         public void Update(int StartY)
         {
             /* Sköter logiken på Player
