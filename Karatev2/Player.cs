@@ -51,6 +51,7 @@ namespace Karate
                 Position = new Vector2(Position.X, StartY);
                 Velocity = Vector2.Zero;
                 isJumping = false;
+                //Hej
             }
 
             Velocity += new Vector2(0, 0.2f);
